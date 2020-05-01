@@ -1,17 +1,72 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import SeasonDisplay from './SeasonDisplay';
+import Spinner from './Spinner';
 
+// const App=()=>{
+//     var lat="1234",long="4567";
+//     window.navigator.geolocation.getCurrentPosition(
+//         (position)=>{ lat=position.coords.latitude;long=position.coords.longitude},
+//         (err)=>{ console.log(err);}
+//     );
+//     return (
+//         <div>
+//             <div>hiii</div>
+//             <div>{lat}</div>
+//             <div>{long}</div>
+//             <SeasonDisplay/>
+//         </div>
+//     );
+// }
+
+//class component
+
+class App extends React.Component{
+    // constructor(props){
+    //     super(props);
+    //     this.state={
+    //         lat:null,
+    //         ErrorMessage:''
+    //     };
+    // }
+
+    //or
+    state={lat:null,ErrorMessage:''};
+    componentDidMount(){
+        window.navigator.geolocation.getCurrentPosition(
+            (position)=>{this.setState({lat:position.coords.latitude});},
+            (err)=>{this.setState({ErrorMessage:err.message})}
+        );
+    }
+    renderContent(){
+        if(this.state.ErrorMessage){
+            return(
+                <div>
+                    Error:{this.state.ErrorMessage}
+                </div>);
+        }
+        else if(this.state.lat){
+            return(
+                <div>
+                    <SeasonDisplay lat={this.state.lat}/>
+                </div>
+            );
+        }
+        else{
+            return (
+                <Spinner message="Please accept loaction request"/>
+            );
+        }
+    }
+    render(){
+        return(
+            <div>
+            {this.renderContent()}
+        </div>
+        );
+    }
+}
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <App/>,
+    document.querySelector('#root')
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
